@@ -14,7 +14,7 @@
 	<meta property="og:image" content="{{$product_detail->photo}}">
 	<meta property="og:description" content="{{$product_detail->description}}">
 @endsection
-@section('title','E-SHOP || PRODUCT DETAIL')
+@section('title','CarBazar || PRODUCT DETAIL')
 @section('main-content')
 
 		<!-- Breadcrumbs -->
@@ -143,6 +143,39 @@
 														<a href="{{route('add-to-wishlist',$product_detail->slug)}}" class="btn min"><i class="ti-heart"></i></a>
 													</div>
 												</form>
+
+					                            <!-- Bid -->
+					                            @auth
+					                            	<br>
+					                            	<div class="bidding" style="background-color: #cbcbcb; display: inline-block; padding: 10px;">
+						                                <h4 style="margin-bottom: 5px;">Bid more than {{$product_detail->maxbid}}</h4>
+						                                <p style="margin-bottom: 5px;">Current max bid: {{$product_detail->maxbid}}, Bidder id: {{$product_detail->bidderid}}</p>
+						                                <div class="input-group">
+						                                    <input type="text" name="bidamount" id="bidamount" value="">&nbsp;&nbsp;
+						                                	<a href="#" id="bidbtn" class="btn" style="color: white;" onclick="bidNow()">Bid</a>
+						                                </div>
+						                                <h6 style="margin-top: 5px;" id="successstat"></h6>
+						                            </div>
+						                            <script>
+						                            	function bidNow(){
+						                            		var bidamount = document.getElementById("bidamount").value;
+
+							                            	if (bidamount > {{$product_detail->maxbid}}) {
+							                            		var moon = new XMLHttpRequest();
+														        moon.onreadystatechange = function() {
+														            if (this.readyState == 4 && this.status == 200) {
+														                document.getElementById("successstat").innerHTML = "Bidding Success";
+														            }
+														        };
+														        moon.open("GET","http://localhost/api/bid.php?bidamount="+bidamount+"&userid={{auth()->user()->id}}&productid={{$product_detail->id}}", true);
+														        moon.send();
+							                            	} else {
+							                            		document.getElementById("successstat").innerHTML = "Please input value correctly";
+							                            	}
+						                            	}
+						                            </script>
+						                        @endauth
+					                            <!-- End Bid -->
 
 												<p class="cat">Category :<a href="{{route('product-cat',$product_detail->cat_info['slug'])}}">{{$product_detail->cat_info['title']}}</a></p>
 												@if($product_detail->sub_cat_info)
@@ -460,6 +493,7 @@
                                 <a href="#" class="btn min"><i class="ti-heart"></i></a>
                                 <a href="#" class="btn min"><i class="fa fa-compress"></i></a>
                             </div>
+
                             <div class="default-social">
                                 <h4 class="share-now">Share:</h4>
                                 <ul>
